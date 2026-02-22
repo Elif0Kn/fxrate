@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live FX Rates</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        .arrow {
+            font-size: 18px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .up-arrow {
+            color: green;
+        }
+        .down-arrow {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live FX Rates</h1>
+    
+    <div id="filters">
+        <h3>Select Currency Pairs:</h3>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'AUD/USD')"> AUD/USD</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'EUR/AUD')"> EUR/AUD</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'EUR/GBP')"> EUR/GBP</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'EUR/JPY')"> EUR/JPY</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'EUR/USD')"> EUR/USD</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'EUR/TRY')"> EUR/TRY</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'GBP/CAD')"> GBP/CAD</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'GBP/USD')"> GBP/USD</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'USD/JPY')"> USD/JPY</label>
+        <label><input type="checkbox" onchange="filterRates(this.checked, 'USD/TRY')"> USD/TRY</label>
+    </div>
+
+    <table id="ratesTable">
+        <thead>
+            <tr>
+                <th>Provider</th>
+                <th>Pair</th>
+                <th>Bid</th>
+                <th>Ask</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rates will be appended here -->
+        </tbody>
+    </table>
+
+    <script>
+        const ratesTable = document.getElementById('ratesTable').getElementsByTagName('tbody')[0];
+        const selectedPairs = new Set();
+        const ratesCache = {}; // Stores the latest valid rates
+
+        // WebSocket connection
+        const socket = new WebSocket("ws://localhost:8080/ws/rates");
+
+        socket.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+
+            // Check if the message is an alert by checking for the expected properties
+            if (message.spread !== undefined && message.pair !== undefined) {
+                alert(`High spread detected for ${message.pair}: ${message.spread}`);
+            } else {
+                // Handle rate update messages
+                const rate = message; // Assuming rate update structure is unchanged
+                if (isNewMessage(rate.timestamp)) {
+                    ratesCache[rate.pair] = rate; // Add or update the cache
+
+                    // Update UI if no pairs are selected or if the received pair is selected
+                    if (selectedPairs.size === 0 || selectedPairs.has(rate.pair)) {
+                        updateRatesTable(rate);
+                    }
+                }
+            }
+        };
+
+
+        function isNewMessage(timestamp) {
+            const currentTime = Date.now();
+            return (currentTime - timestamp) <= 5000; // Messages considered "new" if within 5 seconds
+        }
+
+        function updateRatesTable(rate) {
+            // Check previous rate if it exists
+            const previousRate = ratesCache[rate.pair];
+
+            // Update UI row or create new one
+            let row;
+            if (previousRate) {
+                // If the pair already exists, update the row
+                row = [...ratesTable.rows].find(r => r.cells[1].innerText === rate.pair);
+                row.cells[2].innerText = rate.bid;
+                row.cells[3].innerText = rate.ask;
+                row.cells[4].innerText = new Date(rate.timestamp).toLocaleString();
+            } else {
+                // If the pair is new, insert a new row
+                row = ratesTable.insertRow();
+                row.innerHTML = `
+                    <td>${rate.provider}</td>
+                    <td>${rate.pair}</td>
+                    <td>${rate.bid}</td>
+                    <td>${rate.ask}</td>
+                    <td>${new Date(rate.timestamp).toLocaleString()}</td>
+                `;
+            }
+
+            // Logic to check if the spread has moved upward or downward
+            if (previousRate) {
+                const previousSpread = previousRate.ask - previousRate.bid;
+                const currentSpread = rate.ask - rate.bid;
+                const arrow = currentSpread > previousSpread ? '<span class="up-arrow">↑</span>' : '<span class="down-arrow">↓</span>';
+                row.cells[1].innerHTML += arrow; // Add the arrow next to the currency pair
+            }
+        }
+
+        function filterRates(isChecked, pair) {
+            if (isChecked) {
+            selectedPairs.add(pair);
+                socket.send(JSON.stringify({ action: 'subscribe', pair: pair })); // Send subscribe to server
+            } else {
+                selectedPairs.delete(pair);
+                socket.send(JSON.stringify({ action: 'unsubscribe', pair: pair })); // Send unsubscribe to server
+            }
+
+            // Clear the displayed table
+            ratesTable.innerHTML = '';
+
+            // Populate with filtered data from the cache
+            selectedPairs.forEach(selectedPair => {
+                if (ratesCache[selectedPair]) {
+                    updateRatesTable(ratesCache[selectedPair]); // Show from cache
+                }
+            });
+        }
+
+        // Set up periodic refresh to ensure cache is current
+        setInterval(() => {
+            fetch('/api/rates')
+            .then(response => response.json())
+            .then(rates => {
+                rates.forEach(rate => {
+                    if (isNewMessage(rate.timestamp)) {
+                        ratesCache[rate.pair] = rate; // Update the cache
+                        // Optionally update UI if a relevant pair is selected
+                        if (selectedPairs.has(rate.pair)) {
+                            updateRatesTable(rate); // Refresh the displayed rate
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching rates:', error));
+        }, 10000); // Refresh every 10 seconds
+    </script>
+</body>
+</html>

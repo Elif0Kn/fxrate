@@ -1,0 +1,27 @@
+2026-02-22T22:57:52.210+03:00 ERROR 20920 --- [fxrate] [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to bind properties under 'logging.level.root' to org.springframework.boot.logging.LogLevel:
+
+    Property: logging.level.root
+    Value: "INFO          # Set the global logging level (e.g., INFO, DEBUG, ERROR)"
+    Origin: class path resource [application.properties] - 12:20
+    Reason: failed to convert java.lang.String to org.springframework.boot.logging.LogLevel (caused by java.lang.IllegalArgumentException: No enum constant org.springframework.boot.logging.LogLevel.INFO          # Set the global logging level (e.g., INFO, DEBUG, ERROR))
+
+Action:
+
+Update your application's configuration. The following values are valid:
+
+    DEBUG
+    ERROR
+    FATAL
+    INFO
+    OFF
+    TRACE
+    WARN
+
