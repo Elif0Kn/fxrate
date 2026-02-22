@@ -1552,3 +1552,18 @@ Unconditional classes:
 2026-02-22T23:01:37.577+03:00 DEBUG 22124 --- [fxrate] [SpringApplicationShutdownHook] o.s.c.support.DefaultLifecycleProcessor  : Bean 'rabbitConnectionFactory' completed its stop procedure
 2026-02-22T23:01:37.579+03:00 DEBUG 22124 --- [fxrate] [SpringApplicationShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
 2026-02-22T23:01:37.581+03:00 DEBUG 22124 --- [fxrate] [SpringApplicationShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2026-02-22T23:02:04.797+03:00  INFO 21000 --- [fxrate] [restartedMain] c.realtimefxrate.main.FxrateApplication  : Starting FxrateApplication using Java 25.0.2 with PID 21000 (D:\workspace-spring-tool-suite\fxrate\fxrate\target\classes started by Elif in D:\workspace-spring-tool-suite\fxrate\fxrate)
+2026-02-22T23:02:04.800+03:00  INFO 21000 --- [fxrate] [restartedMain] c.realtimefxrate.main.FxrateApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-02-22T23:02:04.856+03:00  INFO 21000 --- [fxrate] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-02-22T23:02:04.857+03:00  INFO 21000 --- [fxrate] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-02-22T23:02:05.851+03:00  INFO 21000 --- [fxrate] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-02-22T23:02:05.868+03:00  INFO 21000 --- [fxrate] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-22T23:02:05.869+03:00  INFO 21000 --- [fxrate] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.52]
+2026-02-22T23:02:05.914+03:00  INFO 21000 --- [fxrate] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-02-22T23:02:05.915+03:00  INFO 21000 --- [fxrate] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1057 ms
+2026-02-22T23:02:06.487+03:00  INFO 21000 --- [fxrate] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-02-22T23:02:06.519+03:00  INFO 21000 --- [fxrate] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-02-22T23:02:06.531+03:00  INFO 21000 --- [fxrate] [restartedMain] c.realtimefxrate.main.FxrateApplication  : Started FxrateApplication in 2.216 seconds (process running for 2.717)
+2026-02-22T23:02:28.210+03:00  INFO 21000 --- [fxrate] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-22T23:02:28.211+03:00  INFO 21000 --- [fxrate] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-22T23:02:28.213+03:00  INFO 21000 --- [fxrate] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
